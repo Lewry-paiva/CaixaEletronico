@@ -17,6 +17,7 @@ internal class Caixa
 
     static void IniciarSistema()
     {
+        Banco banco = new Banco();
         Usuario usuario = new Usuario();
         Caixa caixa = new Caixa();
         int erro = 0;
@@ -25,7 +26,7 @@ internal class Caixa
         {
             MostrarMenuInicial();
             string senha = Console.ReadLine();
-            if (caixa.ValidarSenha(senha, usuario))
+            if (banco.ValidarSenha(senha, usuario))
             {
                 erro = 0;
                 int opcao = 0;
@@ -115,14 +116,7 @@ internal class Caixa
             return 0;
         }
        
-    }
-
-    public bool ValidarSenha(string senha_, Usuario usuario_)
-    {
-        return usuario_.VerificarSenha(senha_);
-    }
-
-    
+    } 
 
     public decimal ValorSaque(decimal valor_)
     {
