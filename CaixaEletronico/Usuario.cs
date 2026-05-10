@@ -8,17 +8,17 @@ using System.Text;
 namespace CaixaEletronico;
 public class Usuario
 {
-    private string senha_ = "1234";
+    private string senha_ { get; } = "1234";
     private decimal saldo_ = 5000m;
     public string nome = "IURY";
 
     public decimal Saldo => saldo_;
 
-    public bool VerificarSenha(string senha)
+    public string exibirSenha()
     {
-        return senha == senha_;
+        return senha_;
     }
-    
+
     public string ExibirSaldo()
     {
         string saldoFormatado = saldo_.ToString("C");
