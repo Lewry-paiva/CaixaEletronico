@@ -17,6 +17,7 @@ internal class Caixa
 
     static void IniciarSistema()
     {
+        Banco banco = new Banco();
         Usuario usuario = new Usuario();
         Caixa caixa = new Caixa();
         int erro = 0;
@@ -25,7 +26,7 @@ internal class Caixa
         {
             MostrarMenuInicial();
             string senha = Console.ReadLine();
-            if (caixa.ValidarSenha(senha, usuario))
+            if (caixa.ValidarSenha(senha, banco, usuario))
             {
                 erro = 0;
                 int opcao = 0;
@@ -40,7 +41,7 @@ internal class Caixa
                             Console.Write("DIGITE O VALOR DO SAQUE: ");
                             if (decimal.TryParse(Console.ReadLine(), out decimal valor_saque))
                             {
-                                if (caixa.ValorSaque(valor_saque) != 0 && usuario.Sacar(valor_saque))
+                                if (caixa.ValorSaque(valor_saque,usuario))
                                 {
                                     Console.WriteLine("***** SAQUE REALIZADO COM SUCESSO! *****");
                                 }
@@ -114,29 +115,41 @@ internal class Caixa
             Console.WriteLine("***** OPÇÃO INVÁLIDA! POR FAVOR *****");
             return 0;
         }
+        
        
     }
-
-    public bool ValidarSenha(string senha_, Usuario usuario_)
+    
+   
+    public bool ValidarSenha(string senha_, Banco banco, Usuario usuario)
     {
-        return usuario_.VerificarSenha(senha_);
+        return banco.ValidarSenha(usuario, senha_);
     }
 
-    
 
-    public decimal ValorSaque(decimal valor_)
+    public bool ValorSaque(decimal valor_, Usuario usuario_)
     {
-        if (valor_ > dinheiroNocaixa)
+        if (valor_ <= 0)
         {
-            Console.WriteLine("***** VALOR INDISPONÍVEL NO CAIXA! *****");
-            return 0;
+            Console.WriteLine("***** VALOR INVÁLIDO! *****");
+            return false;
         }
         else
         {
-            dinheiroNocaixa -= valor_;
-            return valor_;
+            if (valor_ > dinheiroNocaixa)
+            {
+                Console.WriteLine("***** VALOR INDISPONÍVEL NO CAIXA! *****");
+                return false;
+            }
+            else if (usuario_.Sacar(valor_) && valor_ <= dinheiroNocaixa)
+            {
+                dinheiroNocaixa -= valor_;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-
     }
 
     public bool ValorDeposito(decimal valor_) 
