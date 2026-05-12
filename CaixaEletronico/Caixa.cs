@@ -6,6 +6,7 @@ using System.Text;
 
 namespace CaixaEletronico;
 
+
 internal class Caixa
 {
     decimal dinheiroNocaixa = 10000m;
@@ -14,7 +15,7 @@ internal class Caixa
     {
        IniciarSistema();
     }
-
+    
     static void IniciarSistema()
     {
         Banco banco = new Banco();
@@ -26,7 +27,7 @@ internal class Caixa
         {
             MostrarMenuInicial();
             string senha = Console.ReadLine();
-            if (banco.ValidarSenha(senha, usuario))
+            if (banco.Iniciar(senha, usuario))
             {
                 erro = 0;
                 int opcao = 0;
@@ -41,7 +42,7 @@ internal class Caixa
                             Console.Write("DIGITE O VALOR DO SAQUE: ");
                             if (decimal.TryParse(Console.ReadLine(), out decimal valor_saque))
                             {
-                                if (caixa.ValorSaque(valor_saque) != 0 && usuario.Sacar(valor_saque))
+                                if (caixa.Saque(valor_saque, banco, usuario))
                                 {
                                     Console.WriteLine("***** SAQUE REALIZADO COM SUCESSO! *****");
                                 }
@@ -52,21 +53,22 @@ internal class Caixa
                             }
                             break;
 
-                            case 2:
-                                Console.Write("DIGITE O VALOR DO DEPÓSITO: ");
+                        case 2:
+                            Console.Write("DIGITE O VALOR DO DEPÓSITO: ");
                                 if (decimal.TryParse(Console.ReadLine(), out decimal valor_deposito))
                                 {
                                     if (caixa.ValorDeposito(valor_deposito))
                                     {
-                                        usuario.Deposito(valor_deposito);
+                                        banco.RealizarDeposito(valor_deposito, usuario);
                                         Console.WriteLine("***** DEPÓSITO REALIZADO COM SUCESSO! *****");
                                     }              
                                 }
                                 else
                                 {
-                                    Console.WriteLine("***** VALOR INVÁLIDO! *****");
-                                    
+                                Console.WriteLine("***** VALOR INVÁLIDO! *****");    
                                 }
+                                break;
+                        case 3:
                             break;
                     }   
                             
@@ -118,19 +120,19 @@ internal class Caixa
        
     } 
 
-    public decimal ValorSaque(decimal valor_)
+    public bool Saque(decimal valor_, Banco banco, Usuario usuario)
     {
         if (valor_ > dinheiroNocaixa)
         {
             Console.WriteLine("***** VALOR INDISPONÍVEL NO CAIXA! *****");
-            return 0;
+            return false;
         }
-        else
+        else if(banco.VerificarSaque(valor_, usuario))
         {
             dinheiroNocaixa -= valor_;
-            return valor_;
+            return true;
         }
-
+        return false;
     }
 
     public bool ValorDeposito(decimal valor_) 

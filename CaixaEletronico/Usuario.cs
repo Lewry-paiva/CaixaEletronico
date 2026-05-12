@@ -8,42 +8,33 @@ using System.Text;
 namespace CaixaEletronico;
 public class Usuario
 {
-    private string senha_ = "1234";
-    private decimal saldo_ = 5000m;
+    private string senha= "1234";
+    private decimal saldo = 5000m;
     public string nome = "IURY";
 
-    public decimal Saldo => saldo_;
+    public decimal Saldo => this.saldo;
+    public string Senha => this.senha;
 
     public bool VerificarSenha(string senha)
     {
-        return senha == senha_;
+        return senha == Senha;
     }
     
     public string ExibirSaldo()
     {
-        string saldoFormatado = saldo_.ToString("C");
+        string saldoFormatado = this.saldo.ToString("C");
         return saldoFormatado;
     }
 
-    public bool Sacar(decimal valor)
-    {
-        if (Saldo < valor)
-        {
-            Console.WriteLine("***** SALDO INSUFICIENTE! *****");
-            return false;
-        }
-        else
-        {
-            saldo_ -= valor;
-            return true;
-        }
-        
+    public void Sacar(decimal valor)
+    {   
+            this.saldo -= valor;   
     }
 
     public void Deposito(decimal valor)
     {
 
-        saldo_ += valor;
+        this.saldo += valor;
 
     }
 
