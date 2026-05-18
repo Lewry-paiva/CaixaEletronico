@@ -13,27 +13,28 @@ internal class Caixa
     decimal limiteCaixa = 500000m;
     public static void Main()
     {
-       IniciarSistema();
+        IniciarSistema();
     }
     
     static void IniciarSistema()
     {
         Banco banco = new Banco();
-        Usuario usuario = new Usuario();
         Caixa caixa = new Caixa();
+
         int erro = 0;
 
         while (erro < 3)
         {
             MostrarMenuInicial();
+            string contacorrente = Console.ReadLine();
             string senha = Console.ReadLine();
-            if (banco.Iniciar(senha, usuario))
+            if (banco.Iniciar(senha, contacorrente))
             {
                 erro = 0;
                 int opcao = 0;
                 while (opcao != 3)
                 {
-                    MostrarMenuPrincipal(usuario, caixa);
+                    MostrarMenuPrincipal(banco, caixa, contacorrente);
                     opcao = ValidarOpcao(Console.ReadLine());
 
                     switch (opcao)
@@ -42,7 +43,7 @@ internal class Caixa
                             Console.Write("DIGITE O VALOR DO SAQUE: ");
                             if (decimal.TryParse(Console.ReadLine(), out decimal valor_saque))
                             {
-                                if (caixa.Saque(valor_saque, banco, usuario))
+                                if (caixa.Saque(valor_saque, banco, contacorrente))
                                 {
                                     Console.WriteLine("***** SAQUE REALIZADO COM SUCESSO! *****");
                                 }
@@ -59,7 +60,7 @@ internal class Caixa
                                 {
                                     if (caixa.ValorDeposito(valor_deposito))
                                     {
-                                        banco.RealizarDeposito(valor_deposito, usuario);
+                                        banco.RealizarDeposito(valor_deposito,contacorrente);
                                         Console.WriteLine("***** DEPÓSITO REALIZADO COM SUCESSO! *****");
                                     }              
                                 }
@@ -69,6 +70,15 @@ internal class Caixa
                                 }
                                 break;
                         case 3:
+                            Console.Write("DIGITE O VALOR DA TRANSFERÊNCIA: ");
+                            if (decimal.TryParse(Console.ReadLine(), out decimal valor_transferencia))
+                            {
+                                banco.transferencia(valor_transferencia, contacorrente);
+                            }
+                            else
+                            {
+                                Console.WriteLine("***** VALOR INVÁLIDO! *****");
+                            }
                             break;
                     }   
                             
@@ -90,14 +100,13 @@ internal class Caixa
         Console.WriteLine("BEM VINDO AO CAIXA ELETRÔNICO!");
         Console.WriteLine("CONTA: 154-85XXX-XX");
         Console.WriteLine("------------------------");
-        Console.Write("DIGITE SUA SENHA: ");
+        Console.WriteLine("DIGITE PRIMEIRO SUA CONTA CORRENTE E DEPOIS SUA SENHA!");
     }
 
-    static void MostrarMenuPrincipal(Usuario usuario, Caixa caixa)
+    static void MostrarMenuPrincipal(Banco banco, Caixa caixa, string contacorrente)
     {
         Console.WriteLine("------------------------");
-        Console.WriteLine($"NOME: {usuario.nome}");
-        Console.WriteLine($"SALDO: {usuario.ExibirSaldo():C}");
+        banco.ExibirUsuario(contacorrente);
         Console.WriteLine($"DINHEIRO NO CAIXA: {caixa.dinheiroNocaixa:C}");
         Console.WriteLine("1 - SACAR");
         Console.WriteLine("2 - DEPOSITAR");
@@ -120,14 +129,14 @@ internal class Caixa
        
     } 
 
-    public bool Saque(decimal valor_, Banco banco, Usuario usuario)
+    public bool Saque(decimal valor_, Banco banco,string contacorrente)
     {
         if (valor_ > dinheiroNocaixa)
         {
             Console.WriteLine("***** VALOR INDISPONÍVEL NO CAIXA! *****");
             return false;
         }
-        else if(banco.VerificarSaque(valor_, usuario))
+        else if(banco.VerificarSaque(valor_, contacorrente))
         {
             dinheiroNocaixa -= valor_;
             return true;

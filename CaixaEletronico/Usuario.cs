@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
-using System.Text;
-
-namespace CaixaEletronico;
+﻿namespace CaixaEletronico;
 public class Usuario
 {
-    private string senha= "1234";
-    private decimal saldo = 5000m;
-    public string nome = "IURY";
+    public string contacorrente;
+    private string senha;
+    private decimal saldo;
+    public string nome;
 
     public decimal Saldo => this.saldo;
     public string Senha => this.senha;
@@ -38,6 +32,12 @@ public class Usuario
 
     }
 
-    
+    public void Usuarios(string contacorrente, string nome, string senha, decimal saldo)
+    {
+        this.contacorrente = contacorrente;
+        this.nome = nome;
+        this.senha = senha;
+        this.saldo = saldo;
+    }
 
 }
