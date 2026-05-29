@@ -1,17 +1,28 @@
-﻿namespace CaixaEletronico;
+﻿using System.Text.Json.Serialization;
+
+namespace CaixaEletronico;
 public class Usuario
 {
+    
     public string contacorrente;
-    private string senha;
-    private decimal saldo;
+    [JsonInclude] public string senha { get; private set; }
+    [JsonInclude] public decimal saldo { get; private set; }
     public string nome;
 
-    public decimal Saldo => this.saldo;
-    public string Senha => this.senha;
+    public void SetSenha(string senha)
+    {
+        if (string.IsNullOrWhiteSpace(senha))
+        {
+            throw new ArgumentException("senha invalida");
+        }
+        
+        this.senha = senha;
+    }
+    
 
     public bool VerificarSenha(string senha)
     {
-        return senha == Senha;
+        return senha == this.senha;
     }
     
     public string ExibirSaldo()
@@ -32,11 +43,10 @@ public class Usuario
 
     }
 
-    public void Usuarios(string contacorrente, string nome, string senha, decimal saldo)
+    public void Usuarios(string contacorrente, string nome, decimal saldo)
     {
         this.contacorrente = contacorrente;
         this.nome = nome;
-        this.senha = senha;
         this.saldo = saldo;
     }
 

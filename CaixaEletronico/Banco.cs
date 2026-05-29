@@ -4,20 +4,12 @@ namespace CaixaEletronico;
 internal class Banco
 {
     Dictionary<string, Usuario> usuarios = new Dictionary<string, Usuario>();
-
+    
     public Banco()
     {
-        // Criar um usuário de exemplo
-        Usuario usuarioExemplo = new Usuario();
-        usuarioExemplo.Usuarios("123456", "João", "1", 5000m);
-        usuarios.Add(usuarioExemplo.contacorrente, usuarioExemplo);
-        
-        Usuario usuarioExemplo2 = new Usuario();
-        usuarioExemplo2.Usuarios("123458", "Maria", "1", 5000m);
-        usuarios.Add(usuarioExemplo2.contacorrente, usuarioExemplo2);
-
+        usuarios = Json.CarregarUsuario();
     }
-
+    
     public bool Iniciar(string senha, string contacorrente)
     {
         if (usuarios.TryGetValue(contacorrente, out Usuario? user))
@@ -40,7 +32,7 @@ internal class Banco
     public bool VerificarSaque(decimal valorAsacar, string contacorrente)
     {
        usuarios.TryGetValue(contacorrente, out Usuario? user);
-        if (valorAsacar <= user.Saldo)
+        if (valorAsacar <= user.saldo)
         {
             user.Sacar(valorAsacar);
             return true;
@@ -60,28 +52,33 @@ internal class Banco
 
     public void NovoUsuario()
     {
-        
+        Usuario novoUsuario = new Usuario();
+
         Console.WriteLine("digite a conta");
         string contacorrente = Console.ReadLine();
         Console.WriteLine("digite o nome");
         string nome = Console.ReadLine();
         Console.WriteLine("digite a senha");
         string senha = Console.ReadLine();
+        novoUsuario.SetSenha(senha);
         Console.WriteLine("Saldo");
         decimal saldo = decimal.Parse(Console.ReadLine());
         
-        Usuario novoUsuario = new Usuario();
-        novoUsuario.Usuarios(contacorrente, nome, senha, saldo);
+        
+        novoUsuario.Usuarios(contacorrente, nome, saldo);
 
         usuarios.Add(novoUsuario.contacorrente, novoUsuario);
+
+        Json.SalvarUsuario(usuarios);
     }
     public void ExibirUsuario(string contacorrente)
     {
+        
         usuarios.TryGetValue(contacorrente, out Usuario? user);
         if (user != null)
         {
             Console.WriteLine($"NOME: {user.nome}");
-            Console.WriteLine($"SALDO: {user.Saldo}");
+            Console.WriteLine($"SALDO: {user.saldo:C}");
         }
     }
 
@@ -95,11 +92,12 @@ internal class Banco
 
         if (user != null && destinatario != null)
         {
-            if (valorATransferir <= user.Saldo)
+            if (valorATransferir <= user.saldo)
             {
                 user.Sacar(valorATransferir);
                 destinatario.Deposito(valorATransferir);
                 Console.WriteLine("Transferência realizada com sucesso!");
+                Json.SalvarUsuario(usuarios);
             }
             else
             {

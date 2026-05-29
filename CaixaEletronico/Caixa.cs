@@ -18,89 +18,113 @@ internal class Caixa
     
     static void IniciarSistema()
     {
+        
         Banco banco = new Banco();
         Caixa caixa = new Caixa();
 
         int erro = 0;
+        int opcao = 0;
 
-        while (erro < 3)
+        while (erro <= 3)
         {
+
             MostrarMenuInicial();
-            string contacorrente = Console.ReadLine();
-            string senha = Console.ReadLine();
-            if (banco.Iniciar(senha, contacorrente))
+            Console.WriteLine("1 - ENTRAR");
+            Console.WriteLine("2 - CRIAR CONTA");
+            Console.WriteLine("------------------------");
+            opcao = int.Parse(Console.ReadLine());
+            switch (opcao)
             {
-                erro = 0;
-                int opcao = 0;
-                while (opcao != 3)
-                {
-                    MostrarMenuPrincipal(banco, caixa, contacorrente);
-                    opcao = ValidarOpcao(Console.ReadLine());
+                case 1:
+                    MostrarMenuInicial();
+                    Console.Write("CONTA CORRENTE: ");
+                    string contacorrente = Console.ReadLine();
+                    Console.Write("SENHA: ");
+                    string senha = Console.ReadLine();
 
-                    switch (opcao)
+
+                    if (banco.Iniciar(senha, contacorrente))
                     {
-                        case 1:
-                            Console.Write("DIGITE O VALOR DO SAQUE: ");
-                            if (decimal.TryParse(Console.ReadLine(), out decimal valor_saque))
-                            {
-                                if (caixa.Saque(valor_saque, banco, contacorrente))
-                                {
-                                    Console.WriteLine("***** SAQUE REALIZADO COM SUCESSO! *****");
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine("***** VALOR INVÁLIDO! *****");
-                            }
-                            break;
+                        erro = 0;
 
-                        case 2:
-                            Console.Write("DIGITE O VALOR DO DEPÓSITO: ");
-                                if (decimal.TryParse(Console.ReadLine(), out decimal valor_deposito))
-                                {
-                                    if (caixa.ValorDeposito(valor_deposito))
+                        while (opcao != 4)
+                        {
+                            Console.Clear();
+                            MostrarMenuPrincipal(banco, caixa, contacorrente);
+                            opcao = ValidarOpcao(Console.ReadLine());
+
+                            switch (opcao)
+                            {
+                                case 1:
+                                    Console.Write("DIGITE O VALOR DO SAQUE: ");
+                                    if (decimal.TryParse(Console.ReadLine(), out decimal valor_saque))
                                     {
-                                        banco.RealizarDeposito(valor_deposito,contacorrente);
-                                        Console.WriteLine("***** DEPÓSITO REALIZADO COM SUCESSO! *****");
-                                    }              
-                                }
-                                else
-                                {
-                                Console.WriteLine("***** VALOR INVÁLIDO! *****");    
-                                }
-                                break;
-                        case 3:
-                            Console.Write("DIGITE O VALOR DA TRANSFERÊNCIA: ");
-                            if (decimal.TryParse(Console.ReadLine(), out decimal valor_transferencia))
-                            {
-                                banco.transferencia(valor_transferencia, contacorrente);
+                                        if (caixa.Saque(valor_saque, banco, contacorrente))
+                                        {
+                                            Console.WriteLine("***** SAQUE REALIZADO COM SUCESSO! *****");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("***** VALOR INVÁLIDO! *****");
+                                    }
+                                    break;
+
+                                case 2:
+                                    Console.Write("DIGITE O VALOR DO DEPÓSITO: ");
+                                    if (decimal.TryParse(Console.ReadLine(), out decimal valor_deposito))
+                                    {
+                                        if (caixa.ValorDeposito(valor_deposito))
+                                        {
+                                            banco.RealizarDeposito(valor_deposito, contacorrente);
+                                            Console.WriteLine("***** DEPÓSITO REALIZADO COM SUCESSO! *****");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("***** VALOR INVÁLIDO! *****");
+                                    }
+                                    break;
+                                case 3:
+                                    Console.Write("DIGITE O VALOR DA TRANSFERÊNCIA: ");
+                                    if (decimal.TryParse(Console.ReadLine(), out decimal valor_transferencia))
+                                    {
+                                        banco.transferencia(valor_transferencia, contacorrente);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("***** VALOR INVÁLIDO! *****");
+                                    }
+                                    break;
+
                             }
-                            else
-                            {
-                                Console.WriteLine("***** VALOR INVÁLIDO! *****");
-                            }
-                            break;
-                    }   
-                            
-                }
-                
+
+                        }
+
+                    }
+                    else
+                    {
+                        Console.Clear();
+                        Console.WriteLine("***** SENHA INCORRETA! *****");
+                        Console.WriteLine($"VOCÊ TEM {4 - erro} TENTATIVAS RESTANTES!");
+                        erro++;
+                    }
+                    break;
+                case 2:
+                    banco.NovoUsuario();
+
+                    break; 
             }
-            else
-            {
-                Console.WriteLine("***** SENHA INCORRETA! *****");
-                Console.WriteLine($"VOCÊ TEM {3 - erro} TENTATIVAS RESTANTES!");
-                erro++;
-            }
+            
         }
         
     }
    static void MostrarMenuInicial()
     {
         Console.WriteLine("------------------------");
-        Console.WriteLine("BEM VINDO AO CAIXA ELETRÔNICO!");
-        Console.WriteLine("CONTA: 154-85XXX-XX");
+        Console.WriteLine("CAIXA ELETRÔNICO!");
         Console.WriteLine("------------------------");
-        Console.WriteLine("DIGITE PRIMEIRO SUA CONTA CORRENTE E DEPOIS SUA SENHA!");
+        
     }
 
     static void MostrarMenuPrincipal(Banco banco, Caixa caixa, string contacorrente)
@@ -110,14 +134,15 @@ internal class Caixa
         Console.WriteLine($"DINHEIRO NO CAIXA: {caixa.dinheiroNocaixa:C}");
         Console.WriteLine("1 - SACAR");
         Console.WriteLine("2 - DEPOSITAR");
-        Console.WriteLine("3 - SAIR");
+        Console.WriteLine("3 - TRANSFERIR");
+        Console.WriteLine("4 - SAIR");
         Console.WriteLine("------------------------");
         Console.Write("ESCOLHA UMA OPÇÃO: ");
     }
 
     static int ValidarOpcao(string opcao_ = "0")
     {
-       if(int.TryParse(opcao_, out int opcao) && opcao >= 1 && opcao <= 3)
+       if(int.TryParse(opcao_, out int opcao) && opcao >= 1 && opcao <= 4)
         {
             return opcao;
         }
